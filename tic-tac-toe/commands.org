@@ -1,0 +1,10 @@
+#+STARTUP: content showstars indent
+#+OPTIONS: tags:nil
+#+TITLE: Hedera TicTacToe Commands
+#+FILETAGS: hedera commands
+
+
+* Commands
+- =curl -X POST http://localhost:3000/tictactoe/create-game -H "Content-Type: application/json" -d '{"player1Id":"player1"}'=
+- =curl -X POST http://localhost:3000/tictactoe/join-game -H "Content-Type: application/json" -d '{"topicId":"0.0.4703656", "player2Id":"player2"}'=
+- =curl -X POST http://localhost:3000/tictactoe/make-move -H "Content-Type: application/json" -d '{"playerId":"player1", "position":0}'=

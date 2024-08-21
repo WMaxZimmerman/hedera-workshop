@@ -1,0 +1,337 @@
+#+STARTUP: content showstars indent
+#+OPTIONS: tags:nil
+#+TITLE: Hedera TicTacToe REST Client
+#+FILETAGS: hedera tic_tac_toe restclient
+
+
+* Constants
+  #+NAME: define-constants-with-src-block
+  #+BEGIN_SRC elisp :var hosts=hosts devices=devices commands=commands :results output drawer
+    (defun output-table-constants (table var-name)
+      "Does the thing"
+      (while table
+        (progn (setq row (car table))
+               (if (string= "x" (nth 1 row))
+                 (princ (format "#+CONSTANTS: %s=%s\n" var-name (nth 2 row))) nil)
+               (setq table (cdr table)))))
+
+    (output-table-constants hosts "host")
+    (output-table-constants devices "device")
+    (output-table-constants commands "command")
+  #+END_SRC
+
+  #+RESULTS[7c6c116a8b595159a96b2b30bde8f4fc9db20ad2]: define-constants-with-src-block
+  :results:
+  #+CONSTANTS: host=http://localhost:3000
+  #+CONSTANTS: device=1040
+  #+CONSTANTS: command=off
+  :end:
+
+* Tables
+** Hosts  
+#+name: hosts
+| Description |   | Value                 |
+|-------------+---+-----------------------|
+| local       | x | http://localhost:3000 |
+
+** Devices
+#+name: devices
+| Description    |   | Value |
+|----------------+---+-------|
+| Office Speaker | x |  1040 |
+| Office Light   |   |   626 |
+| Home Group     |   |  1041 |
+| Den TV         |   |  1045 |
+
+** Commands
+#+name: commands
+| Description     |   | Value |
+|-----------------+---+-------|
+| Turns Light On  |   | on    |
+| Turns Light Off | x | off   |
+    
+* Calls
+:PROPERTIES:
+:header-args: :var host=(org-table-get-constant "host") device=(org-table-get-constant "device") command=(org-table-get-constant "command")
+:END:
+
+** Create Game
+#+BEGIN_SRC restclient
+POST :host/tictactoe/create-game
+Content-Type: application/json
+{
+  "player1Id":"player1"
+}
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC js
+{
+  "topicId": "0.0.4707380",
+  "gameData": {
+    "player1Id": "player1",
+    "player2Id": null,
+    "board": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "currentPlayer": "player1",
+    "winner": null,
+    "status": "waiting_for_player2",
+    "topicId": "0.0.4707380"
+  }
+}
+// POST http://localhost:3000/tictactoe/create-game
+// HTTP/1.1 201 Created
+// X-Powered-By: Express
+// Content-Type: application/json; charset=utf-8
+// Content-Length: 209
+// ETag: W/"d1-+F6D8rNDmTcTMRVAIgDsqSm7tik"
+// Date: Tue, 20 Aug 2024 18:59:41 GMT
+// Connection: keep-alive
+// Keep-Alive: timeout=5
+// Request duration: 2.174028s
+#+END_SRC
+
+** Join Game
+#+BEGIN_SRC restclient
+POST :host/tictactoe/join-game
+Content-Type: application/json
+{
+  "topicId":"0.0.4707380",
+  "player2Id":"player2"
+}
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC js
+{
+  "player1Id": "player1",
+  "player2Id": "player2",
+  "board": [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  "currentPlayer": "player1",
+  "winner": null,
+  "status": "in_progress",
+  "topicId": "0.0.4707380"
+}
+// POST http://localhost:3000/tictactoe/join-game
+// HTTP/1.1 201 Created
+// X-Powered-By: Express
+// Content-Type: application/json; charset=utf-8
+// Content-Length: 169
+// ETag: W/"a9-5qatzSIHZgMUUTF1H6zoUXP1ZyA"
+// Date: Tue, 20 Aug 2024 18:59:52 GMT
+// Connection: keep-alive
+// Keep-Alive: timeout=5
+// Request duration: 0.418346s
+#+END_SRC
+
+** Make Move
+#+BEGIN_SRC restclient
+POST :host/tictactoe/make-move
+Content-Type: application/json
+{
+  "topicId":"0.0.4707273",
+  "playerId":"player1",
+  "position":8
+}
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC js
+{
+  "player1Id": "player1",
+  "player2Id": "player2",
+  "board": [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "X"
+  ],
+  "currentPlayer": "player2",
+  "winner": null,
+  "status": "in_progress",
+  "topicId": "0.0.4707273"
+}
+// POST http://localhost:3000/tictactoe/make-move
+// HTTP/1.1 201 Created
+// X-Powered-By: Express
+// Content-Type: application/json; charset=utf-8
+// Content-Length: 170
+// ETag: W/"aa-nuyW2FT1Z+Two9UumJwaNhrD0mo"
+// Date: Tue, 20 Aug 2024 18:53:58 GMT
+// Connection: keep-alive
+// Keep-Alive: timeout=5
+// Request duration: 0.345409s
+#+END_SRC
+
+** Get Game
+#+BEGIN_SRC restclient
+POST :host/tictactoe/get-game
+Content-Type: application/json
+{
+  "topicId":"0.0.4706992"
+}
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC js
+[
+  {
+    "player1Id": "player1",
+    "player2Id": null,
+    "board": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "currentPlayer": "player1",
+    "winner": null,
+    "status": "waiting_for_player2",
+    "topicId": "0.0.4706992"
+  },
+  {
+    "player1Id": "player1",
+    "player2Id": "player2",
+    "board": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "currentPlayer": "player1",
+    "winner": null,
+    "status": "in_progress",
+    "topicId": "0.0.4706992"
+  },
+  {
+    "player1Id": "player1",
+    "player2Id": "player2",
+    "board": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "X"
+    ],
+    "currentPlayer": "player2",
+    "winner": null,
+    "status": "in_progress",
+    "topicId": "0.0.4706992"
+  }
+]
+// POST http://localhost:3000/tictactoe/get-game
+// HTTP/1.1 201 Created
+// X-Powered-By: Express
+// Content-Type: application/json; charset=utf-8
+// Content-Length: 515
+// ETag: W/"203-jvXE0/CX4sjEhp2vhNzhbguYcD4"
+// Date: Tue, 20 Aug 2024 18:40:55 GMT
+// Connection: keep-alive
+// Keep-Alive: timeout=5
+// Request duration: 0.174633s
+#+END_SRC
+
+* Hedera Calls
+** Example Messages
+#+BEGIN_SRC restclient
+GET https://testnet.mirrornode.hedera.com/api/v1/topics/0.0.4704621/messages
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC js
+{
+  "messages": [
+    {
+      "chunk_info": {
+        "initial_transaction_id": {
+          "account_id": "0.0.4668517",
+          "nonce": 0,
+          "scheduled": false,
+          "transaction_valid_start": "1724170204.461376782"
+        },
+        "number": 1,
+        "total": 1
+      },
+      "consensus_timestamp": "1724170213.596414003",
+      "message": "eyJwbGF5ZXIxSWQiOiJwbGF5ZXIxIiwicGxheWVyMklkIjpudWxsLCJib2FyZCI6WyIiLCIiLCIiLCIiLCIiLCIiLCIiLCIiLCIiXSwiY3VycmVudFBsYXllciI6InBsYXllcjEiLCJ3aW5uZXIiOm51bGwsInN0YXR1cyI6IndhaXRpbmdfZm9yX3BsYXllcjIiLCJ0b3BpY0lkIjoiMC4wLjQ3MDQ2MjEifQ==",
+      "payer_account_id": "0.0.4668517",
+      "running_hash": "+2B2WxZnOkARh8uwxL7gORwK6AC7cotR3nO8p+E5BWptTC1kKTRuHIvUNu3S7qnR",
+      "running_hash_version": 3,
+      "sequence_number": 1,
+      "topic_id": "0.0.4704621"
+    },
+    {
+      "chunk_info": {
+        "initial_transaction_id": {
+          "account_id": "0.0.4668517",
+          "nonce": 0,
+          "scheduled": false,
+          "transaction_valid_start": "1724170218.813934969"
+        },
+        "number": 1,
+        "total": 1
+      },
+      "consensus_timestamp": "1724170229.226934003",
+      "message": "eyJwbGF5ZXIxSWQiOiJwbGF5ZXIxIiwicGxheWVyMklkIjoicGxheWVyMiIsImJvYXJkIjpbIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiIsIiJdLCJjdXJyZW50UGxheWVyIjoicGxheWVyMSIsIndpbm5lciI6bnVsbCwic3RhdHVzIjoiaW5fcHJvZ3Jlc3MiLCJ0b3BpY0lkIjoiMC4wLjQ3MDQ2MjEifQ==",
+      "payer_account_id": "0.0.4668517",
+      "running_hash": "4IPtEq3RN/MUzYLUBChkDbn6VRWApEFHMs9I2Uodvz+38VUGciwTsyvLm2LMwh4I",
+      "running_hash_version": 3,
+      "sequence_number": 2,
+      "topic_id": "0.0.4704621"
+    }
+  ],
+  "links": {
+    "next": null
+  }
+}
+// GET https://testnet.mirrornode.hedera.com/api/v1/topics/0.0.4704621/messages
+// HTTP/1.1 200 OK
+// access-control-allow-origin: *
+// cache-control: public, max-age=1
+// content-type: application/json; charset=utf-8
+// date: Tue, 20 Aug 2024 16:10:47 GMT
+// etag: W/"528-4AHNHO3tGpFu3VExDLoMEalOauc"
+// vary: Accept-Encoding
+// Via: 1.1 google
+// Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+// Transfer-Encoding: chunked
+// Request duration: 0.156868s
+#+END_SRC
